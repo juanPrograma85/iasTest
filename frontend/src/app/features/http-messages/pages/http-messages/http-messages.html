@@ -1,0 +1,43 @@
+<section class="page">
+  <div class="page__header">
+    <h2>Actividad HTTP</h2>
+    <button type="button" class="btn btn--secondary" (click)="activity.clear()"
+            [disabled]="activity.entries().length === 0">Limpiar</button>
+  </div>
+  <p class="hint">Respuestas del API registradas durante esta sesión del navegador (más recientes primero).</p>
+
+  @if (activity.entries().length === 0) {
+    <p class="empty" data-testid="activity-empty">
+      Aún no hay respuestas registradas. Procese o consulte solicitudes para verlas aquí.
+    </p>
+  } @else {
+    <div class="card table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Método</th>
+            <th>URL</th>
+            <th>HTTP</th>
+            <th>Código</th>
+            <th>Mensaje</th>
+            <th class="num">Duración</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of activity.entries(); track entry.id) {
+            <tr data-testid="activity-row">
+              <td>{{ entry.timestamp | date: 'mediumTime' }}</td>
+              <td><span class="method">{{ entry.method }}</span></td>
+              <td class="url">{{ entry.url }}</td>
+              <td><span class="code {{ statusClass(entry.status) }}">{{ statusLabel(entry.status) }}</span></td>
+              <td>{{ entry.code ?? '-' }}</td>
+              <td class="message">{{ entry.message }}</td>
+              <td class="num">{{ entry.durationMs }} ms</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,15 @@
+<header class="topbar">
+  <span class="brand">
+    <span class="brand__mark"><app-icon name="wallet" [size]="18" /></span>
+    BancoIAS <small>Créditos</small>
+  </span>
+  <nav>
+    <a routerLink="/credit-applications/new" routerLinkActive="active">Nueva solicitud</a>
+    <a routerLink="/credit-applications/recent" routerLinkActive="active">Solicitudes recientes</a>
+    <a routerLink="/http-messages" routerLinkActive="active">Mensajes HTTP</a>
+  </nav>
+</header>
+<app-notifications />
+<main class="content">
+  <router-outlet />
+</main>

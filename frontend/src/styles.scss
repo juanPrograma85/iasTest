@@ -1,0 +1,213 @@
+@use '@angular/material' as mat;
+
+$font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+
+html {
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$blue-palette,
+        tertiary: mat.$green-palette,
+        theme-type: light,
+      ),
+      typography: (
+        plain-family: $font-family,
+        brand-family: $font-family,
+      ),
+      density: 0,
+    )
+  );
+
+  // Paleta BancoIAS sobre los tokens de Material 3.
+  --mat-sys-primary: #2563eb;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-error: #ef4444;
+  --mat-sys-surface: #ffffff;
+  --mat-sys-background: #f8fafc;
+  --mat-sys-outline: #cbd5e1;
+  --mat-sys-outline-variant: #e2e8f0;
+}
+
+:root {
+  --brand: #0b1f4d;
+  --brand-soft: #13306f;
+  --secondary: #2563eb;
+  --secondary-soft: #eff6ff;
+  --success: #10b981;
+  --danger: #ef4444;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-alt: #f1f5f9;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 8px 24px rgb(15 23 42 / 6%);
+  --shadow-hover: 0 2px 4px rgb(15 23 42 / 6%), 0 12px 32px rgb(15 23 42 / 10%);
+
+  // Variantes accesibles (texto sobre fondos claros).
+  --approved-bg: #ecfdf5;
+  --approved-fg: #047857;
+  --rejected-bg: #fef2f2;
+  --rejected-fg: #b91c1c;
+  --info-bg: #eff6ff;
+  --info-fg: #1d4ed8;
+  --warning-bg: #fffbeb;
+  --warning-fg: #b45309;
+
+  font-family: $font-family;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.75rem 2rem;
+  border-radius: var(--radius);
+  color: #fff;
+  background: linear-gradient(120deg, var(--brand) 0%, var(--brand-soft) 55%, var(--secondary) 130%);
+  box-shadow: var(--shadow);
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0.35rem 0 0;
+    color: #c7d6f5;
+  }
+}
+
+.hero__title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hero__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 12%);
+  color: #fff;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.card__title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--info-bg);
+  color: var(--info-fg);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// Botones simples usados por la página de Mensajes HTTP.
+.btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--secondary);
+  color: #fff;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn--secondary {
+  background: var(--surface);
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-raised-button.mat-primary {
+  --mdc-filled-button-container-shape: 12px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 1.25rem;
+  }
+
+  .card {
+    padding: 1.1rem;
+  }
+}

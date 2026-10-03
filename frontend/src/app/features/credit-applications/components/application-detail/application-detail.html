@@ -1,0 +1,42 @@
+@let app = application();
+@let approved = app.status === 'APPROVED';
+<article class="detail" [class.detail--approved]="approved" [class.detail--rejected]="!approved">
+  <header class="detail__header">
+    <span class="detail__status-icon">
+      <app-icon [name]="approved ? 'check' : 'cross'" [size]="26" />
+    </span>
+    <div class="detail__heading">
+      <span class="section-label">Application Reference</span>
+      <h3>{{ app.applicationReference }}</h3>
+    </div>
+    <app-status-badge [status]="app.status" />
+  </header>
+
+  <div class="detail__amount">
+    <span class="section-label">Amount</span>
+    <strong>{{ app.amount | currency: 'COP' : 'symbol-narrow' : '1.0-2' }}</strong>
+  </div>
+
+  <dl class="detail__grid">
+    <div class="tile">
+      <dt><app-icon name="user" [size]="16" /> Customer</dt>
+      <dd>{{ app.customerId }}</dd>
+    </div>
+    <div class="tile">
+      <dt><app-icon name="calendar" [size]="16" /> Term</dt>
+      <dd>{{ app.termMonths }} meses</dd>
+    </div>
+    <div class="tile">
+      <dt><app-icon name="shield" [size]="16" /> Status</dt>
+      <dd data-testid="status">{{ app.status }}</dd>
+    </div>
+    <div class="tile">
+      <dt><app-icon name="clock" [size]="16" /> Processed At</dt>
+      <dd>{{ app.processedAt | date: 'medium' }}</dd>
+    </div>
+    <div class="tile tile--wide">
+      <dt><app-icon name="info" [size]="16" /> Decision Reason</dt>
+      <dd data-testid="reason">{{ app.decisionReason | decisionReasonLabel }} <code>{{ app.decisionReason }}</code></dd>
+    </div>
+  </dl>
+</article>

@@ -1,0 +1,160 @@
+<section class="page">
+  <header class="hero">
+    <div class="hero__title">
+      <span class="hero__icon"><app-icon name="wallet" [size]="26" /></span>
+      <div>
+        <h1>Nueva solicitud de crédito</h1>
+        <p>Evaluación inmediata con control de cupo y protección ante solicitudes duplicadas.</p>
+      </div>
+    </div>
+    <span class="hero__badge"><app-icon name="shield" [size]="16" /> Decisión en línea</span>
+  </header>
+
+  <form class="layout" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="card">
+      <h2 class="card__title"><app-icon name="document" /> Datos de la solicitud</h2>
+
+      <div class="fields">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Application Reference</mat-label>
+          <app-icon matIconPrefix name="hash" [size]="18" class="prefix" />
+          <input matInput id="applicationReference" formControlName="applicationReference" placeholder="REF-001"
+                 autocomplete="off" />
+          <mat-hint>Identificador único de la solicitud.</mat-hint>
+          <mat-error class="field-error">
+            @if (showError('applicationReference', 'required')) {
+              La referencia es obligatoria.
+            } @else if (showError('applicationReference', 'pattern')) {
+              Use 1-64 letras, dígitos, '-' o '_'.
+            }
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Customer</mat-label>
+          <app-icon matIconPrefix name="user" [size]="18" class="prefix" />
+          <input matInput id="customerId" formControlName="customerId" list="known-customers" placeholder="CLI-1001"
+                 autocomplete="off" [errorStateMatcher]="customerErrorMatcher" />
+          <datalist id="known-customers">
+            @for (customer of knownCustomers; track customer) {
+              <option [value]="customer"></option>
+            }
+          </datalist>
+          <mat-hint>
+            @if (form.controls.customerId.pending) {
+              Verificando cliente…
+            } @else if (customerBlocked()) {
+              <span class="hint-warning" data-testid="customer-blocked">
+                Cliente bloqueado: la solicitud quedará rechazada.
+              </span>
+            } @else if (customer()) {
+              <span class="hint-ok">Cliente habilitado.</span>
+            } @else {
+              Clientes de prueba: {{ knownCustomers.join(', ') }}
+            }
+          </mat-hint>
+          <mat-error class="field-error">
+            @if (showError('customerId', 'required')) {
+              El cliente es obligatorio.
+            } @else if (showError('customerId', 'pattern')) {
+              Use 1-20 letras, dígitos o '-'.
+            } @else if (form.controls.customerId.hasError('customerNotFound')) {
+              El cliente no existe.
+            }
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Amount (COP)</mat-label>
+          <app-icon matIconPrefix name="cash" [size]="18" class="prefix" />
+          <input matInput id="amount" type="number" formControlName="amount" min="1" step="1" placeholder="6000000" />
+          <mat-hint>Valor solicitado en pesos colombianos.</mat-hint>
+          <mat-error class="field-error">
+            @if (showError('amount', 'required')) {
+              El monto es obligatorio.
+            } @else if (showError('amount', 'positive')) {
+              El monto debe ser mayor a cero.
+            }
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Term (meses)</mat-label>
+          <app-icon matIconPrefix name="calendar" [size]="18" class="prefix" />
+          <input matInput id="termMonths" type="number" formControlName="termMonths" [min]="minTerm" [max]="maxTerm"
+                 step="1" placeholder="24" />
+          <mat-hint>Entre {{ minTerm }} y {{ maxTerm }} meses.</mat-hint>
+          <mat-error class="field-error">
+            @if (showError('termMonths', 'required')) {
+              El plazo es obligatorio.
+            } @else if (showError('termMonths', 'min') || showError('termMonths', 'max')) {
+              El plazo debe estar entre {{ minTerm }} y {{ maxTerm }} meses.
+            } @else if (showError('termMonths', 'integer')) {
+              El plazo debe ser un número entero de meses.
+            }
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <aside class="card summary" aria-label="Resumen de la solicitud">
+      <h2 class="card__title"><app-icon name="trend" /> Resumen</h2>
+
+      <div class="summary__amount">
+        <span class="section-label">Monto solicitado</span>
+        <strong>
+          @if (summary().amount; as amount) {
+            {{ amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+          } @else {
+            $ —
+          }
+        </strong>
+      </div>
+
+      <dl class="summary__list">
+        <div><dt>Referencia</dt><dd>{{ summary().reference || '—' }}</dd></div>
+        <div><dt>Cliente</dt><dd>{{ summary().customer || '—' }}</dd></div>
+        <div><dt>Plazo</dt><dd>{{ summary().term ? summary().term + ' meses' : '—' }}</dd></div>
+      </dl>
+
+      <ul class="checklist">
+        @for (check of checks(); track check.label) {
+          <li [class.ok]="check.ok">
+            <app-icon [name]="check.ok ? 'check' : 'info'" [size]="18" />
+            {{ check.label }}
+          </li>
+        }
+      </ul>
+
+      @if (customerBlocked()) {
+        <p class="summary__warning">
+          <app-icon name="info" [size]="18" />
+          {{ customer()!.customerId }} está bloqueado: la solicitud se registrará como rechazada sin consumir cupo.
+        </p>
+      }
+
+      <button mat-flat-button type="submit" class="submit" [disabled]="store.submitting() || pending()">
+        <span class="btn-icon">
+          <app-icon name="send" [size]="18" />
+          {{ store.submitting() ? 'Procesando…' : 'Procesar solicitud' }}
+        </span>
+      </button>
+      @if (store.submitting()) {
+        <mat-progress-bar mode="indeterminate" />
+      }
+      <p class="summary__note">La decisión final la toma el motor de reglas del banco.</p>
+    </aside>
+  </form>
+
+  <div class="result" aria-live="polite">
+    @if (store.lastResult(); as result) {
+      @if (result.idempotentReplay) {
+        <p class="notice" data-testid="replay-notice">
+          <app-icon name="info" />
+          Esta referencia ya había sido procesada. Se muestra el resultado original; no se consumió cupo adicional.
+        </p>
+      }
+      <app-application-detail [application]="result" />
+    }
+  </div>
+</section>

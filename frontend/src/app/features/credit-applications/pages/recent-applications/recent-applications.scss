@@ -1,0 +1,194 @@
+.hero__action {
+  --mdc-outlined-button-label-text-color: #fff;
+  --mdc-outlined-button-outline-color: rgb(255 255 255 / 40%);
+  --mat-outlined-button-state-layer-color: #fff;
+  color: #fff;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.board {
+  display: grid;
+  gap: 1rem;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.prefix {
+  margin: 0 0.5rem 0 0.75rem;
+  color: var(--muted);
+}
+
+.status-toggle {
+  border-radius: 12px;
+}
+
+.board__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  background: var(--surface-alt);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+tbody tr {
+  border-top: 1px solid var(--border);
+  transition: background 120ms ease;
+}
+
+tbody tr:hover {
+  background: var(--secondary-soft);
+}
+
+.num {
+  text-align: right;
+}
+
+.ref,
+.amount {
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.lookup-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.75rem 2rem;
+  border-radius: var(--radius);
+  background: linear-gradient(120deg, var(--brand), var(--brand-soft));
+  color: #fff;
+  box-shadow: var(--shadow);
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0.3rem 0 0;
+    color: #c7d6f5;
+  }
+}
+
+.lookup-panel__intro {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lookup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.lookup__submit {
+  height: 56px;
+  min-width: 8rem;
+}
+
+.lookup-result {
+  max-width: 48rem;
+}
+
+@media (max-width: 1024px) {
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lookup-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .kpis,
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .lookup-panel {
+    padding: 1.25rem;
+  }
+
+  .lookup {
+    grid-template-columns: 1fr;
+  }
+
+  // Tabla como tarjetas en móvil.
+  thead {
+    display: none;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+  }
+
+  tbody tr {
+    padding: 0.75rem 1rem;
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.35rem 0;
+    white-space: normal;
+    text-align: right;
+
+    &::before {
+      content: attr(data-label);
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: left;
+    }
+  }
+}

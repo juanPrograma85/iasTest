@@ -1,0 +1,127 @@
+<section class="page">
+  <header class="hero">
+    <div class="hero__title">
+      <span class="hero__icon"><app-icon name="trend" [size]="26" /></span>
+      <div>
+        <h1>Solicitudes recientes</h1>
+        <p>Panel operacional de las últimas decisiones de crédito.</p>
+      </div>
+    </div>
+    <button mat-stroked-button type="button" class="hero__action" (click)="refresh()" [disabled]="store.recentLoading()">
+      <span class="btn-icon">
+        <app-icon name="refresh" [size]="18" />
+        {{ store.recentLoading() ? 'Cargando…' : 'Actualizar' }}
+      </span>
+    </button>
+  </header>
+
+  <div class="kpis">
+    <app-kpi-card label="Total solicitudes" [value]="kpis().total" icon="document" />
+    <app-kpi-card label="Aprobadas" [value]="kpis().approved" icon="check" tone="success" />
+    <app-kpi-card label="Rechazadas" [value]="kpis().rejected" icon="cross" tone="danger" />
+    <app-kpi-card label="Monto aprobado acumulado" [value]="kpis().approvedAmount" icon="wallet" tone="brand" />
+  </div>
+
+  <div class="card board">
+    <div class="filters">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Referencia</mat-label>
+        <app-icon matIconPrefix name="hash" [size]="18" class="prefix" />
+        <input matInput id="filter-reference" [value]="referenceFilter()"
+               (input)="referenceFilter.set(inputValue($event))" autocomplete="off" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Cliente</mat-label>
+        <app-icon matIconPrefix name="user" [size]="18" class="prefix" />
+        <input matInput id="filter-customer" [value]="customerFilter()"
+               (input)="customerFilter.set(inputValue($event))" autocomplete="off" />
+      </mat-form-field>
+      <mat-button-toggle-group class="status-toggle" aria-label="Filtrar por estado" hideSingleSelectionIndicator
+                               [value]="statusFilter()" (change)="statusFilter.set($event.value)">
+        <mat-button-toggle value="ALL">Todas</mat-button-toggle>
+        <mat-button-toggle value="APPROVED">Aprobadas</mat-button-toggle>
+        <mat-button-toggle value="REJECTED">Rechazadas</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <div class="board__meta">
+      <span data-testid="results-count">Mostrando {{ filtered().length }} de {{ store.recent().length }}</span>
+      @if (hasFilters()) {
+        <button mat-button type="button" (click)="clearFilters()">Limpiar filtros</button>
+      }
+    </div>
+
+    @if (store.recentLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    @if (store.recentError()) {
+      <app-empty-state icon="info" title="No fue posible cargar las solicitudes recientes."
+                       description="Intente actualizar en unos segundos." data-testid="recent-error" />
+    } @else if (!store.recentLoading() && store.recent().length === 0) {
+      <app-empty-state title="Aún no hay solicitudes procesadas."
+                       description="Las solicitudes que procese aparecerán aquí." data-testid="empty" />
+    } @else if (filtered().length === 0 && store.recent().length > 0) {
+      <app-empty-state icon="filter" title="Sin resultados para los filtros aplicados."
+                       data-testid="no-results">
+        <button mat-stroked-button type="button" (click)="clearFilters()">Limpiar filtros</button>
+      </app-empty-state>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Referencia</th>
+              <th>Cliente</th>
+              <th class="num">Monto</th>
+              <th class="num">Plazo</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Razón</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of filtered(); track app.applicationReference) {
+              <tr data-testid="recent-row">
+                <td data-label="Referencia" class="ref">{{ app.applicationReference }}</td>
+                <td data-label="Cliente">{{ app.customerId }}</td>
+                <td data-label="Monto" class="num amount">{{ app.amount | currency: 'COP' : 'symbol-narrow' : '1.0-2' }}</td>
+                <td data-label="Plazo" class="num">{{ app.termMonths }} m</td>
+                <td data-label="Estado"><app-status-badge [status]="app.status" /></td>
+                <td data-label="Fecha" class="muted">{{ app.processedAt | date: 'short' }}</td>
+                <td data-label="Razón">{{ app.decisionReason | decisionReasonLabel }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <div class="lookup-panel">
+    <div class="lookup-panel__intro">
+      <span class="hero__icon"><app-icon name="search" [size]="24" /></span>
+      <div>
+        <h2>Consulta por referencia</h2>
+        <p>Encuentre cualquier solicitud procesada con su Application Reference.</p>
+      </div>
+    </div>
+    <form class="lookup" [formGroup]="lookupForm" (ngSubmit)="search()" novalidate>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Application Reference</mat-label>
+        <app-icon matIconPrefix name="search" [size]="18" class="prefix" />
+        <input matInput id="lookup" formControlName="reference" placeholder="REF-001" autocomplete="off" />
+        <mat-error class="field-error">Ingrese una referencia válida (1-64 letras, dígitos, '-' o '_').</mat-error>
+      </mat-form-field>
+      <button mat-flat-button type="submit" class="lookup__submit" [disabled]="store.lookupLoading()">
+        {{ store.lookupLoading() ? 'Buscando…' : 'Consultar' }}
+      </button>
+    </form>
+  </div>
+
+  <div class="lookup-result" aria-live="polite">
+    @if (store.lookupResult(); as application) {
+      <app-application-detail [application]="application" />
+    }
+  </div>
+</section>
